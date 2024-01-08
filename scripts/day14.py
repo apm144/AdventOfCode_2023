@@ -22,6 +22,7 @@ test_1 = [
     '#OO..#....',
 ]
 test_answer_1 = 136
+test_answer_2 = 64
 
 
 def get_new_coordinates(rock_coordinates, cube_rock_grid):
@@ -92,29 +93,29 @@ def solve_day_part_1(data):
 def solve_day_part_2(data, mirror=True):
 
     # Loop over the input rows
-    round_rock_grid = []
+    # round_rock_grid = []
     grid_north = []
     rock_coordinates = []
-    cube_coordinates = []
+    # cube_coordinates = []
     for row_id, row in enumerate(data):
-        round_rock_row = []
+        # round_rock_row = []
         cube_rock_row = []
         for col_id, char in enumerate(row):
             if char == 'O':
-                round_rock_row.append(1)
+                # round_rock_row.append(1)
                 cube_rock_row.append(0)
                 rock_coordinates.append([row_id, col_id])
             elif char == '#':
-                round_rock_row.append(0)
+                # round_rock_row.append(0)
                 cube_rock_row.append(1)
-                cube_coordinates.append([row_id, col_id])
+                # cube_coordinates.append([row_id, col_id])
             else:
-                round_rock_row.append(0)
+                # round_rock_row.append(0)
                 cube_rock_row.append(0)
-        round_rock_grid.append(round_rock_row)
+        # round_rock_grid.append(round_rock_row)
         grid_north.append(cube_rock_row)
 
-    round_rock_grid = np.array(round_rock_grid)
+    # round_rock_grid = np.array(round_rock_grid)
     grid_north = np.array(grid_north)
     grid_west = np.rot90(grid_north, -1)
     grid_south = np.rot90(grid_west, -1)
@@ -126,13 +127,14 @@ def solve_day_part_2(data, mirror=True):
     orig_coor = copy.deepcopy(rock_coordinates)
     coor = copy.deepcopy(orig_coor)
 
-    for cycle in range(1, 1000):
+    load_tracker = [0]
+
+    for cycle in range(1, 100):
         coor = get_cycle_coordinates(coor, [grid_north, grid_west, grid_south, grid_east])
         print(cycle, sum([load_map[i[0]] for i in coor]))
+        load_tracker.append(sum([load_map[i[0]] for i in coor]))
 
-    new_coordinates = get_new_coordinates(rock_coordinates, grid_north)
-
-    total_load = sum([load_map[i[0]] for i in new_coordinates])
+    total_load = sum([load_map[i[0]] for i in coor])
 
     print('Total load, ', total_load)
     return total_load
