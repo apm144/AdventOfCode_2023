@@ -14,8 +14,16 @@ test_1 = [
     '????.#...#... 4,1,1',
     '????.######..#####. 1,6,5',
     '?###???????? 3,2,1',
+
+    # '????#??##.????? 1,5,2',
+    # '..#???.??.. 4,1',
+    # '??.??????? 1,4,1',
+    # '#??.????#??. 2,1,2,1',
+    # '?#????##..#????? 8,1,1,1',
+    # '???????#??#.??????? 3,2,2,1,2',
 ]
 test_answer_1 = 21
+test_answer_2 = 525152
 
 
 # Method for solving by expanding the grid by 1
@@ -23,6 +31,7 @@ def solve_day_part_1(data):
 
     # Loop over the input rows
     row_data = []
+    counters = []
     for row in data:
         row_split = row.split()
         string_data = [i for i in row_split[0]]
@@ -30,15 +39,204 @@ def solve_day_part_1(data):
         number_data = [int(i) for i in row_split[1].split(',')]
         unknown_indices = [i for i, j in enumerate(string_data) if j == '?']
         combos = list(itertools.product([0, 1], repeat=len(unknown_indices)))
+        counter = 0
         for combo in combos:
             string_data = orig_string_data.copy()
             for idx, sym_type in zip(unknown_indices, combo):
                 string_data[idx] = '.' if sym_type == 0 else '#'
             string_test = ''.join(string_data).replace('.', ' ').split()
-            print('here')
-        print('here')
+            if len(string_test) == len(number_data):
+                if all([len(string_test[i]) == number_data[i] for i in range(len(string_test))]):
+                    counter += 1
+        counters.append(counter)
 
-    return True
+    # Return sum of shortest paths
+    print('Sum of possible arrangements, ', sum(counters))
+    return sum(counters)
+
+
+def solve_day_part_2(data):
+
+    # Loop over the input rows
+    row_data = []
+    counters = []
+    for row in data:
+        row_split = row.split()
+        string_data = [i for i in row_split[0]]
+        orig_string_data = string_data.copy()
+        number_data = [int(i) for i in row_split[1].split(',')]
+        unknown_indices = [i for i, j in enumerate(string_data) if j == '?']
+        pound_indices = [i for i, j in enumerate(string_data) if j == '#']
+        num_new_pounds_needed = sum(number_data) - len(pound_indices)
+        combos = list(itertools.combinations(unknown_indices, num_new_pounds_needed))
+
+        # combos = list(itertools.product([0, 1], repeat=len(unknown_indices)))
+        counter = 0
+        for combo in combos:
+            string_data = orig_string_data.copy()
+            for idx in unknown_indices:
+                if idx in combo:
+                    string_data[idx] = '#'
+                else:
+                    string_data[idx] = '.'
+            string_test = ''.join(string_data).replace('.', ' ').split()
+            if len(string_test) == len(number_data):
+                if all([len(string_test[i]) == number_data[i] for i in range(len(string_test))]):
+                    counter += 1
+        counters.append(counter)
+
+    # Return sum of shortest paths
+    print('Sum of possible arrangements, ', sum(counters))
+    return sum(counters)
+
+
+def solve_day_part_3(data):
+
+    # Loop over the input rows
+    row_data = []
+    counters = []
+    for row in data:
+        row_split = row.split()
+        string_data = [i for i in row_split[0]]
+        # string_data = string_data + ['?'] + string_data + ['?'] + string_data + ['?'] + string_data + ['?'] +string_data
+        orig_string_data = string_data.copy()
+        # number_data = [int(i) for i in row_split[1].split(',')] * 5
+        number_data = [int(i) for i in row_split[1].split(',')]
+        number_data_orig = number_data.copy()
+
+
+        # combos = list(itertools.product([0, 1], repeat=len(unknown_indices)))
+        total_counter = 0
+        count_track = []
+        # for i, orig_string_data_loop in enumerate([orig_string_data + ['?'] + orig_string_data + ['?'] + orig_string_data,
+        #                                            orig_string_data + ['?'] + orig_string_data + ['?'] + orig_string_data]):
+        # for i, orig_string_data_loop in enumerate([orig_string_data + ['?'],
+        #                                            ['?'] + orig_string_data + ['?'],
+        #                                            ['?'] + orig_string_data,
+        #                                            orig_string_data + ['?'] + orig_string_data]):
+        # for i, orig_string_data_loop in enumerate([['?'] + orig_string_data + ['?']]):
+        orig_string_data_loop = ['?'] + orig_string_data + ['?']
+        # number_data = number_data_orig + number_data_orig if i == 3 else number_data_orig.copy()
+        # number_data = number_data_orig + number_data_orig + number_data_orig
+        unknown_indices = [i for i, j in enumerate(orig_string_data_loop) if j == '?']
+        pound_indices = [i for i, j in enumerate(orig_string_data_loop) if j == '#']
+        num_new_pounds_needed = sum(number_data) - len(pound_indices)
+        combos = list(itertools.combinations(unknown_indices, num_new_pounds_needed))
+        counter = 0
+        good_combos = []
+        for combo in combos:
+            string_data = orig_string_data_loop.copy()
+            for idx in unknown_indices:
+                if idx in combo:
+                    string_data[idx] = '#'
+                else:
+                    string_data[idx] = '.'
+            string_test = ''.join(string_data).replace('.', ' ').split()
+            if len(string_test) == len(number_data):
+                if all([len(string_test[i]) == number_data[i] for i in range(len(string_test))]):
+                    counter += 1
+                    good_combos.append(combo)
+        count_track.append(counter)
+        # if i == 0:
+        #     total_counter = counter
+        # elif i == 1:
+        #     total_counter *= counter * counter * counter
+        # else:
+        #     total_counter *= counter
+
+        leading_valid = 0
+        mid_valid = 0
+        ending_valid = 0
+
+        # new_string = orig_string_data + ['?'] + orig_string_data + ['?']
+        # unknown_indices = [i for i, j in enumerate(new_string) if j == '?']
+        # new_numbers = number_data + number_data
+        # for combo in good_combos:
+        #     if combo[0] == 0:
+        #         continue
+        #     combo = tuple([i - 1 for i in combo])
+        #     for combo2 in good_combos:
+        #         combo2 = tuple([i + len(orig_string_data) for i in combo2])
+        #         for idx in unknown_indices:
+        #             if idx in combo + combo2:
+        #                 new_string[idx] = '#'
+        #             else:
+        #                 new_string[idx] = '.'
+        #         string_test = ''.join(new_string).replace('.', ' ').split()
+        #         if len(string_test) == len(new_numbers):
+        #             if all([len(string_test[i]) == new_numbers[i] for i in range(len(string_test))]):
+        #                 leading_valid += 1
+        #
+        # new_string = ['?'] + orig_string_data + ['?'] + orig_string_data
+        # unknown_indices = [i for i, j in enumerate(new_string) if j == '?']
+        # new_numbers = number_data + number_data
+        # for combo in good_combos:
+        #     if combo[-1] == len(orig_string_data) + 1:
+        #         continue
+        #     combo = tuple([i + len(orig_string_data) + 1 for i in combo])
+        #     for combo2 in good_combos:
+        #         # combo2 = tuple([i + len(orig_string_data) for i in combo2])
+        #         for idx in unknown_indices:
+        #             if idx in combo + combo2:
+        #                 new_string[idx] = '#'
+        #             else:
+        #                 new_string[idx] = '.'
+        #         string_test = ''.join(new_string).replace('.', ' ').split()
+        #         if len(string_test) == len(new_numbers):
+        #             if all([len(string_test[i]) == new_numbers[i] for i in range(len(string_test))]):
+        #                 ending_valid += 1
+
+
+
+        valid_k = []
+        valid_j = []
+        new_string = orig_string_data + ['?'] + orig_string_data
+        unknown_indices = [i for i, j in enumerate(new_string) if j == '?']
+        new_numbers = number_data + number_data
+        for k, combo in enumerate(good_combos):
+            if len(combo) == 0:
+                valid_k = [0]
+                valid_j = [0]
+                break
+            if combo[0] == 0:
+                continue
+            combo = tuple([i - 1 for i in combo])
+            for j, combo2 in enumerate(good_combos):
+                if combo2[-1] == len(orig_string_data) + 1:
+                    continue
+                combo2 = tuple([i + len(orig_string_data) for i in combo2])
+                for idx in unknown_indices:
+                    if idx in combo + combo2:
+                        new_string[idx] = '#'
+                    else:
+                        new_string[idx] = '.'
+                string_test = ''.join(new_string).replace('.', ' ').split()
+                if len(string_test) == len(new_numbers):
+                    if all([len(string_test[i]) == new_numbers[i] for i in range(len(string_test))]):
+                        valid_k.append(k)
+                        valid_j.append(j)
+
+        total_counter = len(np.unique(valid_k)) * len(np.unique(valid_j)) * max([len(np.unique(valid_k)),
+                                                                                 len(np.unique(valid_j))]) ** 3
+
+        # print(len(np.unique(valid_k)) * len(np.unique(valid_j)) * max([len(np.unique(valid_k)), len(np.unique(valid_j))]) ** 3)
+
+        # if count_track[0] * count_track[2] == count_track[3]:
+        #     total_counter = count_track[0] * count_track[2] * count_track[1] ** 3
+        # else:
+        #     print(row, count_track)
+
+        counters.append(total_counter)
+
+        # string_data = orig_string_data.copy()
+        # new_string = string_data + ['?'] + string_data + ['?'] + string_data + ['?'] + string_data + ['?'] + string_data
+        # new_number_data = number_data * 5
+
+
+
+    # Return sum of shortest paths
+    print('Sum of possible arrangements, ', sum(counters))
+    return sum(counters)
 
 
 # # Method for solving by expanding by any arbitrary amount, default is 2 (expansion by 1)
@@ -95,9 +293,16 @@ def solve_day_part_1(data):
 #     return sum(path_length)
 
 
-output_test = solve_day_part_1(test_1)
+# output_test = solve_day_part_1(test_1)
 # print('Output equal to test_1 output for part 1, ', output_test == test_answer_1)
 # output = solve_day_part_1(lines)
+# output_test = solve_day_part_2(test_1)
+# print('Output equal to test_1 output for part 1, ', output_test == test_answer_1)
+# output = solve_day_part_2(lines)
+output_test_2 = solve_day_part_3(test_1)
+print('Output equal to test_1 output for part 1, ', output_test_2 == test_answer_2)
+output_test_2 = solve_day_part_3(lines)
+# too low - 753032410026
 # output_test_1 = solve_day_part_2(test_1, 2)
 # print('Output equal to test_1 output for part 1, ', output_test_1 == test_answer_1)
 # output_test_2 = solve_day_part_2(test_1, 10)
