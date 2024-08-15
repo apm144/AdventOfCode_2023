@@ -65,7 +65,7 @@ def solve_day(data):
     # List of game numbers that are possible - include only if Boolean value of dictionary is True
     possible_games = [i for i, j in possible_outcomes.items() if j]
     # List of power of sets for each game - product of minimum counts for each color
-    power_of_sets = [np.product(list(i.values())) for i in minimum_outcomes.values()]
+    power_of_sets = [np.prod(list(i.values())) for i in minimum_outcomes.values()]
     # Puzzle outputs are the individual sums of these two lists
     print('Sum of game IDs for possible games,', sum(possible_games))
     print('Sum of minimum of power sets of cubes,', sum(power_of_sets))
