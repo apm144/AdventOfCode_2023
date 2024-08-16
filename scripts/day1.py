@@ -6,6 +6,8 @@ f = open(r'..\inputs\input_day1.txt')
 lines = f.readlines()
 f.close()
 
+
+
 test = [
     '1abc2',
     'pqr3stu8vwx',
