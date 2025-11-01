@@ -6,59 +6,62 @@ lines = f.readlines()
 f.close()
 
 test = [
-    '199',
-    '200',
-    '208',
-    '210',
-    '200',
-    '207',
-    '240',
-    '269',
-    '260',
-    '263',
+    '(())',
 ]
-test_answer = 7
-test_2_answer = 5
+test_answer = 0
+test2 = [
+    '(((',
+]
+test_2_answer = 3
 
 
-# Function to determine how many increases given input Numpy Array
-def get_count(values):
-    # Create difference array
-    dif_values = np.diff(values)
-    # Determine if difference results in an increase
-    count = [1 for i in dif_values if i > 0]
-    # Return sum of increases
-    return sum(count)
-
-
+# function that counts ( and )
 def solve_day_1_part_1(data):
-    # Create list of integers (input are list of strings of numbers)
-    values = np.array([int(i) for i in data])
-    # Get number of increases from get_count function
-    result = get_count(values)
-    print('Number of increases is ', result)
-    # Return result
-    return result
+    # Separate each character in string into individual items in list
+    list_of_char = list(data[0])
+    counter_left = 0
+    counter_right = 0
+    # Loop over each character and counts ( and ) into separate counters
+    for paren in list_of_char:
+        if paren == '(':
+            counter_left = counter_left + 1
+        else:
+            counter_right = counter_right + 1
+    # difference between floor counters is the floor Santa is on
+    floor_number = counter_left - counter_right
+    return floor_number
 
 
+# Function to determine the step in instructions when Santa enters basement (floor -1)
 def solve_day_1_part_2(data):
-    # Create list of integers (input are list of strings of numbers)
-    values = np.array([int(i) for i in data])
-    # Create list of sums of three adjacent values
-    grouped_values_sum = []
-    for i in range(len(values) - 2):
-        grouped_values_sum.append(values[i] + values[i + 1] + values[i + 2])
-    # Get number of increases from get_count function
-    result = get_count(grouped_values_sum)
-    print('Number of increases within group of three is ', result)
-    # Return result
-    return result
+    # Separate each character in string into individual items in list
+    list_of_char = list(data[0])
+    counter_left = 0
+    counter_right = 0
+    step_counter = 1
+    # Loop over each character and counts ( and ) into separate counters
+    for paren in list_of_char:
+        if paren == '(':
+            counter_left = counter_left + 1
+        else:
+            counter_right = counter_right + 1
+        # Check if Santa enters basement (floor -1)
+        current_floor = counter_left - counter_right
+        if current_floor == -1:
+            # If he does, exit loop and return current step in instruction
+            break
+        # if not, increase step in instruction continue
+        step_counter += 1
+    return step_counter
 
 
 output_test = solve_day_1_part_1(test)
-print('Output equal to test output, ', output_test == test_answer)
+print('Output equal to test output, ', output_test == test_answer, output_test)
+output_test_2 = solve_day_1_part_1(test2)
+print('Output equal to test output, ', output_test_2 == test_2_answer, output_test_2)
 output = solve_day_1_part_1(lines)
+print('Floor Santa goes to', output)
 
-output_test_2 = solve_day_1_part_2(test)
-print('Output equal to test_2 output, ', output_test_2 == test_2_answer)
+
 output_2 = solve_day_1_part_2(lines)
+print('Position that Santa enters basement is', output_2)
